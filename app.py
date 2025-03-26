@@ -101,7 +101,6 @@ def split_image(image, num_rows, num_cols):
     return parts
 
 def detect_illegal_construction(sub_image, metadata, global_bbox):
-
     lat_min, lat_max, lon_min, lon_max = global_bbox
     x_offset = metadata["x_offset"]
     y_offset = metadata["y_offset"]
@@ -126,15 +125,19 @@ def detect_illegal_construction(sub_image, metadata, global_bbox):
             lon_left = lon_min + (global_x / (global_width - 1)) * (lon_max - lon_min)
             lon_right = lon_min + ((global_x + w - 1) / (global_width - 1)) * (lon_max - lon_min)
 
+            google_maps_url = f"https://www.google.com/maps?q={lat_top},{lon_left}"
+
             detections.append({
                 "latitude_top": round(lat_top, 6),
                 "longitude_left": round(lon_left, 6),
                 "latitude_bottom": round(lat_bottom, 6),
                 "longitude_right": round(lon_right, 6),
                 "width_pixels": w,
-                "height_pixels": h
+                "height_pixels": h,
+                "google_maps_url": google_maps_url
             })
     return detections
+
 
 @app.route('/')
 def index():
