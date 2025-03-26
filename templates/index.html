@@ -60,6 +60,11 @@
       color: #2e7d32;
       margin: 10px 0;
     }
+    .google-earth-link {
+      margin-top: 10px;
+      font-size: 14px;
+      text-align: center;
+    }
   </style>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
@@ -79,6 +84,7 @@
       <div id="coords">📍 Coordenadas Selecionadas: Nenhum ponto escolhido.</div>
       <div id="result">🔍 Nenhuma análise feita ainda.</div>
       <p id="message"></p>
+      <div id="google-earth-link" class="google-earth-link"></div>
     </div>
   </div>
   <script>
@@ -121,15 +127,23 @@
           document.getElementById("processedImage").src = data.processed_image;
           document.getElementById("processedImage").style.display = "block";
           document.getElementById("coords").innerText = `📍 Coordenadas Selecionadas → Latitude: ${data.lat}, Longitude: ${data.lon}`;
+
           let detectionsText = data.detections.length > 0
             ? data.detections.map((d, index) =>
                 `🏠 Construção ${index + 1}:<br>
                 🔹 Lat Sup: ${d.latitude_top}, Lon Esq: ${d.longitude_left}<br>
                 🔹 Lat Inf: ${d.latitude_bottom}, Lon Dir: ${d.longitude_right}<br>
-                📏 Dimensão: ${d.width_pixels}x${d.height_pixels} pixels<br><br>`
+                📏 Dimensão: ${d.width_pixels}x${d.height_pixels} pixels<br>
+                🌍 <a href="${d.google_maps_url}" target="_blank">Abrir no Google Earth/Maps</a><br><br>`
               ).join("")
             : "🚫 Nenhuma construção ilegal detectada.";
+
           document.getElementById("result").innerHTML = `<b>🛠️ Detecções:</b><br>${detectionsText}`;
+
+          let googleEarthLink = document.getElementById("google-earth-link");
+          if (data.detections.length > 0) {
+            googleEarthLink.innerHTML = `🔗 <a href="https://earth.google.com/web/search/${data.detections[0].latitude_top},${data.detections[0].longitude_left}" target="_blank">Ver no Google Earth</a>`;
+          }
         })
         .catch(error => {
           console.error("🚨 Erro:", error);
